@@ -1,12 +1,11 @@
 
 module Unwind
 
-  class DumpFilter
+  class PathFilter
 
     include Enumerable
 
     def initialize()
-      puts "LLLLLL"
       @index   = 0
       @next = nil
       @rules = []
@@ -24,7 +23,8 @@ module Unwind
       @rules << rule
     end
 
-    def filter_rules(revision)
+    def filter(revision)
+      #pp revision
       included_nodes = []
       if ( @rules.empty? )
         return revision

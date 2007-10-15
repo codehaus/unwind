@@ -17,7 +17,15 @@ module Unwind
       @rules << rule
     end
 
-    def filter(node)
+    
+    def filter(revision)
+      for node in revision.nodes
+        filter_node( node )
+      end
+      revision
+    end
+
+    def filter_node(node)
       for rule in @rules
         if ( ! rule.copyfrom_only )
           if ( ( p = rule.try_match( node.path ) ) != nil )
