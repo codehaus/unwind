@@ -8,7 +8,7 @@ module Unwind
     def initialize(repos=[])
       @repos = repos
       @repositories = {}
-      @db = SQLite::Database.new( "svnmerge.db", 0644 )
+      @db = SQLite::Database.new( "unwind.db", 0644 )
       @db.results_as_hash = true
       @db.execute "CREATE TABLE 
                      repos ( 
@@ -25,6 +25,9 @@ module Unwind
                        repo INTEGER,
                        rev INTEGER,
                        path STRING );"
+    end
+
+    def close
     end
   
     def each()

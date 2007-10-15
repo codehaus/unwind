@@ -5,8 +5,7 @@ module Unwind
 
     include Enumerable
 
-    def initialize(backing)
-      @backing = backing
+    def initialize()
       @rules = []
     end
         
@@ -14,16 +13,11 @@ module Unwind
       @rules << RewriteRule.new(input_pattern, output_pattern, copyfrom_only)
     end
 
-    def each
-      @backing.each do |revision|
-        revision.nodes.each do |node|
-          rewrite_paths( node )
-        end
-        yield revision
-      end  
-    end 
+    def <<(rule)
+      @rules << rule
+    end
 
-    def rewrite_paths(node)
+    def filter(node)
       for rule in @rules
         if ( ! rule.copyfrom_only )
           if ( ( p = rule.try_match( node.path ) ) != nil )

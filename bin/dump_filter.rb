@@ -5,15 +5,11 @@ module Unwind
 
     include Enumerable
 
-    def initialize(backing)
-      @backing = backing
+    def initialize()
+      puts "LLLLLL"
       @index   = 0
       @next = nil
       @rules = []
-    end
-
-    def repositories
-      @backing.repositories
     end
 
     def include(regexp)
@@ -24,11 +20,8 @@ module Unwind
       @rules << ExcludeRule.new( regexp )
     end
 
-    def each()
-      @backing.each do |r|
-        r = filter_rules(r)
-        yield r if block_given? && ( r )
-      end
+    def <<(rule)
+      @rules << rule
     end
 
     def filter_rules(revision)
