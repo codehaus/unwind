@@ -13,10 +13,13 @@ module Unwind
     attr_reader :output_path
     attr_reader :source_configs
     attr_reader :output_config
+    attr_reader :opts
   
     def initialize(output_path, opts={}, &block) 
       @source_configs = []
       @output_config = OutputConfig.new( output_path )
+      @opts = opts
+      @output_path = output_path
       begin
         instance_eval &block if block
       rescue Exception => e

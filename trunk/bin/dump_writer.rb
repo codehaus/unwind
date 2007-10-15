@@ -5,10 +5,10 @@ module Unwind
 
     attr_reader :out
 
-    def initialize(revision_source,opts={})
+    def initialize(revision_source,output_path)
       @revision_source = revision_source
-      if ( opts[:output] )
-        @out = File.open( opts[:output], 'w' )
+      if ( output_path )
+        @out = File.open( output_path, 'w' )
       else
         @out = $stdout
       end

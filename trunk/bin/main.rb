@@ -1,7 +1,7 @@
 module Unwind
 
   def self.main(config_path)
-    $logfile = File.open( "merge.log", 'w' )
+    $logfile = File.open( "unwind.log", 'w' )
     config_script = File.read( config_path )
     config = eval config_script
 
@@ -13,13 +13,12 @@ module Unwind
     pipeline = PipelineBuilder.build( config, loader.db, loader.repositories )
 
     #pp pipeline
-
+    #pp config
     #return -1
-
 
     begin
       loader.load
-      writer = Unwind::DumpWriter.new( pipeline )
+      writer = Unwind::DumpWriter.new( pipeline, config.output_path )
       writer.write
     rescue Exception => e 
       $stderr.puts "load cancelled"
@@ -27,6 +26,7 @@ module Unwind
       $stderr.puts e.backtrace
     ensure
       loader.close
+      File.unlink( 'unwind.db' )
     end
 
     #source = DbRevisionSource.new( loader.db, loader.repositories )
