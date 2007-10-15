@@ -1,0 +1,39 @@
+#!/usr/bin/env ruby
+
+dir = File.dirname( __FILE__ )
+for rb in Dir["#{dir}/*.rb"]
+  require rb
+end
+
+module Unwind
+  def self.read_props(input, len)
+    props = Props.new
+    prop_data = StringIO.new( input.read(len) )
+    while ( ! prop_data.eof? ) 
+      k_line = prop_data.readline.chomp
+      if ( k_line == 'PROPS-END' )
+        #input.readline
+        break
+      end
+      if ( k_line =~ /K ([0-9]+)$/ )
+        key_len = $1.to_i
+      else
+        throw "Invalid prop key"
+      end
+      key = prop_data.read( key_len )
+      prop_data.readline
+      v_line = prop_data.readline.chomp
+      if ( v_line =~ /V ([0-9]+)$/ )
+        value_len = $1.to_i
+      else
+        throw "Invalid prop value"
+      end
+      value = prop_data.read( value_len )
+      prop_data.readline
+      props[key] = value
+    end 
+    props 
+  end
+end
+
+Unwind::main(ARGV[0])

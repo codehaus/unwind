@@ -1,0 +1,16 @@
+
+Unwind::Config.new( './output_repo' ) do
+  repo( './svn.dump' ) do 
+    input do
+      rewrite( 'trunk/:module',              ':module/trunk' )
+      rewrite( 'branches/:username/:module', ':module/branches/:username' )
+      rewrite( 'tags/:module',               ':module/tags' )
+    end
+
+    output do
+      exclude( 'trunk' )
+      exclude( 'branches' )
+      exclude( 'tags' )
+    end
+  end
+end
