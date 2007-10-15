@@ -7,6 +7,7 @@ module Unwind
     def initialize(config, db, repositories)
       @config = config
       @db = db
+      @repositories = repositories
       @pipeline = nil
       build
     end
@@ -16,7 +17,7 @@ module Unwind
       source = Filterer.new( source )
 
       @config.source_configs.each do |config|
-        filter = DumpFilter.new()
+        filter = PathFilter.new()
         for rule in config.rules do
           filter << rule
         end
@@ -27,7 +28,7 @@ module Unwind
 
       @config.source_configs.each do |config|
         filter = PathRewritingFilter.new()
-        for rule in config.rules do
+        for rule in config.rewrites do
           filter << rule
         end
         source.set_filter( config.repo_path, filter )
@@ -37,7 +38,7 @@ module Unwind
 
       source = Filterer.new( source )
 
-      filter = DumpFilter.new()
+      filter = PathFilter.new()
       for rule in @config.output_config.rules do
         filter << rule
       end

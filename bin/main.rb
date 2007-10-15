@@ -1,23 +1,30 @@
 module Unwind
 
   def self.main(config_path)
-     #$logfile = File.open( "merge.log", 'w' )
+    $logfile = File.open( "merge.log", 'w' )
     config_script = File.read( config_path )
     config = eval config_script
 
-    repos = config.source_configs.collect{|s| Repository.open( s.repo_path )}
 
+    repos = config.source_configs.collect{|s| Repository.open( s.repo_path )}
 
     loader = Unwind::DumpLoader.new(repos)
 
     pipeline = PipelineBuilder.build( config, loader.db, loader.repositories )
+
+    #pp pipeline
+
+    #return -1
+
 
     begin
       loader.load
       writer = Unwind::DumpWriter.new( pipeline )
       writer.write
     rescue Exception => e 
-      puts "load cancelled"
+      $stderr.puts "load cancelled"
+      $stderr.puts e.message
+      $stderr.puts e.backtrace
     ensure
       loader.close
     end

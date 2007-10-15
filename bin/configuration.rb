@@ -20,8 +20,9 @@ module Unwind
       begin
         instance_eval &block if block
       rescue Exception => e
-        puts "CRAP"
-        puts e.backtrace
+        $stderr.puts "Configuration error:"
+        $stderr.puts e.message
+        $stderr.puts e.backtrace
       end
     end
   
@@ -55,11 +56,11 @@ module Unwind
       end
 
       def include(regexp)
-        @rules << DumpFilter::IncludeRule.new( regexp )
+        @rules << PathFilter::IncludeRule.new( regexp )
       end
 
       def exclude(regexp)
-        @rules << DumpFilter::ExcludeRule.new( regexp )
+        @rules << PathFilter::ExcludeRule.new( regexp )
       end
     end
   
@@ -77,11 +78,11 @@ module Unwind
       end
 
       def include(regexp)
-        @rules << DumpFilter::IncludeRule.new( regexp )
+        @rules << PathFilter::IncludeRule.new( regexp )
       end
 
       def exclude(regexp)
-        @rules << DumpFilter::ExcludeRule.new( regexp )
+        @rules << PathFilter::ExcludeRule.new( regexp )
       end
     end
     
