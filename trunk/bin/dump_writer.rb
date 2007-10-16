@@ -54,6 +54,7 @@ module Unwind
       if ( revision_number == 1 )
         write_zero_revision(revision)
       end
+      $logfile.puts "dump revision: #{revision_number}"
       @revision_map[ [ revision.repo.id, revision.revision_number ] ]  = revision_number
       @global_rev += 1
   
