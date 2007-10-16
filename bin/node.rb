@@ -21,8 +21,18 @@ module Unwind
       @text_content_length = headers['Text-content-length']
       @text_content_md5    = headers['Text-content-md5']
   
-      @copyfrom_rev  = headers['Node-copyfrom-rev']
-      @copyfrom_path = headers['Node-copyfrom-path']
+      @copyfrom_rev  = headers['Node-copyfrom-rev'] 
+      @copyfrom_path = sanitize( headers['Node-copyfrom-path'] )
+      #$logfile.puts "Node.new( action: #{action}, path:#{@path}, copyfrom: #{@copyfrom_path})"
+    end
+
+    def sanitize(path)
+      return nil unless path
+      new_path = nil
+      new_path = path[1,path.length-1] if ( path[0,1] == '/' )
+      new_path ||= path
+      $logfile.puts "sanitize #{path} to #{new_path}"
+      new_path
     end
   
     def in_stream

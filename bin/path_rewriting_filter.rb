@@ -19,9 +19,13 @@ module Unwind
 
     
     def filter(revision)
+      $logfile.puts "before rewrite" if ( revision.revision_number.to_s == '224' )
+      PP::pp( revision, $logfile ) if ( revision.revision_number.to_s == '224' )
       for node in revision.nodes
         filter_node( node )
       end
+      $logfile.puts "after rewrite" if ( revision.revision_number.to_s == '224' )
+      PP::pp( revision, $logfile ) if ( revision.revision_number.to_s == '224' )
       revision
     end
 
@@ -29,14 +33,18 @@ module Unwind
       for rule in @rules
         if ( ! rule.copyfrom_only )
           if ( ( p = rule.try_match( node.path ) ) != nil )
+            $logfile.puts "path rewrite #{node.path} to #{p}"
             node.path = p
             break
           end
         end
       end 
       if ( node.copyfrom_path )
+        #$logfile.puts "copyfrom path: #{node.copyfrom_path}"
         for rule in @rules
+          #$logfile.puts "  copyfrom test #{rule.input_pattern}"
           if ( ( p = rule.try_match( node.copyfrom_path ) ) != nil )
+            $logfile.puts "copyfrom rewrite #{node.copyfrom_path} to #{p}"
             node.copyfrom_path = p
             break
           end
@@ -87,13 +95,19 @@ module Unwind
 
       def try_match(path)
         if ( m = ( @input_regexp.match( path ) ) )
-          replacement = output_pattern
+          replacement = @output_pattern.dup
+          $logfile.puts "#{path} matched against #{@input_regexp} #{@input_pattern} begin replacement with #{@output_pattern}:"
+          PP::pp( self, $logfile )
           @input_replacements.each do |key,index|
+            $logfile.puts "    replace within #{replacement}"
             replacement.gsub!( key, m[index] )  
+            $logfile.puts "    replace #{key} with m[#{index}] (#{m[index]}) -> #{replacement}"
           end
           #path.gsub( m[0], replacement )
           new_path = replacement + path[m[0].length .. -1]
-          #path[0..m[0].length] = replacement
+            #path[0..m[0].length] = replacement
+          $logfile.puts "#{path} matched against #{@input_regexp} #{@input_pattern} replaces to #{new_path}"
+          new_path
         else
           nil
         end

@@ -34,13 +34,14 @@ module Unwind
         throw "SVN dump format must be version 2"
       end
       @in.readline
+      pos = @in.pos
       uuid_line = @in.readline
       if ( uuid_line =~ /UUID: (.*)$/ )
         @uuid = $1
+        @in.readline
       else
-        throw "Invalid or missing UUID"
+        @in.pos = pos
       end
-      @in.readline
     end
 
     def each 
@@ -90,6 +91,7 @@ module Unwind
       orig_pos = @in.pos
       @in.pos = pos
       r = read_revision
+      PP::pp( r, $logfile ) if ( r.revision_number.to_s == '224' )
       @in.pos = orig_pos
       r
     end
