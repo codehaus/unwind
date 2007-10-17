@@ -21,6 +21,7 @@ module Unwind
     def initialize(path)
       @path = path
       @id = Repository.next_repo_sequence
+      @revision_map = {}
     end
   
     def open
@@ -46,6 +47,7 @@ module Unwind
 
     def each 
       while ( ( revision = read_revision ) != nil )
+        @revision_map[ revision.revision_number ] = revision.pos
         yield revision if block_given?
       end
     end
@@ -91,9 +93,15 @@ module Unwind
       orig_pos = @in.pos
       @in.pos = pos
       r = read_revision
-      PP::pp( r, $logfile ) if ( r.revision_number.to_s == '224' )
+      #PP::pp( r, $logfile ) if ( r.revision_number.to_s == '224' )
       @in.pos = orig_pos
       r
     end
+
+   def read_revision_rev(rev)
+     pos = @revision_map[ rev ]
+     return nil unless pos
+     read_revision_at( pos )
+   end
   end
 end

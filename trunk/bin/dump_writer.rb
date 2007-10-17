@@ -93,7 +93,9 @@ module Unwind
         end
         out.puts ""
         out.puts ""
+        out.flush
       end
+      out.flush
     end
   
   end

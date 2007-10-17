@@ -70,7 +70,7 @@ module Unwind
           break
         end
       end
-      Node.new( @in, node_headers, props )
+      Node.new( self, @in, node_headers, props )
     end
   end
 end
