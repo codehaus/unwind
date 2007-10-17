@@ -99,6 +99,7 @@ module Unwind
     def inject_parent_nodes(revision)
       #return revision
       new_nodes = []
+      known_paths = {}
       revision.nodes.each_with_index do |node,i|
         $logfile.puts "node: #{node.action} #{node.path} #{node.copyfrom_path}"
         skip_add = false
@@ -132,11 +133,19 @@ module Unwind
         cur = File.dirname( node.path )
         #while ( cur != '.' && ! has_dir( cur ) )
         while ( cur != '.' && ! has_path( cur, revision.date ) )
-          $logfile.puts "inject parent #{cur} for #{node.path}"
-          add_nodes.unshift( Node.new( nil, revision.in_stream, { 'Node-path'=>cur, 'Node-kind'=>'dir', 'Node-action'=>'add' }, nil ) )
+          $logfile.puts "parenting #{cur}"
+          #if ( known_paths[cur].nil? && ! has_path( cur, revision.date-1 ) )
+            $logfile.puts "inject parent #{cur} for #{node.path}"
+            add_nodes.unshift( Node.new( nil, revision.in_stream, { 'Node-path'=>cur, 'Node-kind'=>'dir', 'Node-action'=>'add' }, nil ) )
+          #end
+          #known_paths[cur] = true
           #add_dir( cur )
           add_path( cur, revision )
-          cur = File.dirname( node.path )
+          cur = File.dirname( cur )
+          #if ( new_cur == cur )
+            #break
+          #end
+          #cur = new_cur
         end
         
         #if ( i == 0 || add_others )
