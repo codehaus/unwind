@@ -16,7 +16,7 @@ module Unwind
     end
 
     def add_path(path, as_of)
-      $stderr.puts "add_path(#{path})"
+      #$stderr.puts "add_path(#{path})"
       db_execute( "
         INSERT INTO dir_paths (
           ts,
@@ -28,12 +28,12 @@ module Unwind
           '#{path}',
           'add'
         ) ;")
-      $stderr.puts "add_path(#{path}) => #{has_path(path, as_of)}"
+      #$stderr.puts "add_path(#{path}) => #{has_path(path, as_of)}"
       #$stdin.getc
     end
 
     def delete_path(path, as_of=Time.now)
-      $stderr.puts "delete_path(#{path})"
+      #$stderr.puts "delete_path(#{path})"
 
       #db_execute( debug_path_sql( path ), true )
       db_execute( "
@@ -45,12 +45,12 @@ module Unwind
         #{generic_path_sql( "#{as_of.to_i}, path, 'del'", path, as_of, true )}
       ;", true )
       #db_execute( debug_path_sql( path ), true )
-      $stderr.puts "delete_path(#{path}) => #{has_path(path, as_of)}"
+      #$stderr.puts "delete_path(#{path}) => #{has_path(path, as_of)}"
       #$stdin.getc
     end
     
     def copy_path(path, as_of, copyfrom_path, copyfrom_as_of)
-      $stderr.puts "copy_path(#{path}, #{as_of} FROM #{copyfrom_path}, #{copyfrom_as_of})"
+      #$stderr.puts "copy_path(#{path}, #{as_of} FROM #{copyfrom_path}, #{copyfrom_as_of})"
              #'#{path}' || substr( path, #{copyfrom_path.length + 1}, length( path - #{copyfrom_path.length} ) )
             #'rewrite/' || inner_path, 
 
@@ -164,7 +164,7 @@ module Unwind
     end
 
     def db_execute(sql, debug=false)
-      if ( debug )
+      if ( false && debug )
         $stderr.puts ""
         $stderr.puts "#### DEBUG #### DEBUG #### DEBUG #### DEBUG #####"
         $stderr.puts sql
@@ -173,14 +173,14 @@ module Unwind
       end
       results = []
       @db.execute( sql ) do |row|
-        if ( debug ) 
+        if ( false && debug ) 
           #PP::pp row, $stderr 
           $stderr.puts row.inspect
         end
         results << row
         yield row if block_given?
       end
-      if ( debug )
+      if ( false && debug )
         $stderr.puts "#### END #### END #### END #### END #####"
         $stderr.flush
       end
