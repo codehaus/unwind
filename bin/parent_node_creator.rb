@@ -60,9 +60,9 @@ module Unwind
       simple = has_dir( path )
       existance = @path_tracker.has_path( path, as_of )
       if ( simple != existance )
-        $stderr.puts "DISAGREE: #{path} #{simple} vs #{existance}"
+        #$stderr.puts "DISAGREE: #{path} #{simple} vs #{existance}"
       else
-        $stderr.puts "AGREE: #{path} #{simple} vs #{existance}"
+        #$stderr.puts "AGREE: #{path} #{simple} vs #{existance}"
       end
       existance
     end
