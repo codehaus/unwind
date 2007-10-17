@@ -35,7 +35,7 @@ module Unwind
     def delete_path(path, as_of=Time.now)
       $stderr.puts "delete_path(#{path})"
 
-      db_execute( debug_path_sql( path ), true )
+      #db_execute( debug_path_sql( path ), true )
       db_execute( "
         INSERT INTO dir_paths ( 
           ts,
@@ -44,28 +44,28 @@ module Unwind
         ) 
         #{generic_path_sql( "#{as_of.to_i}, path, 'del'", path, as_of, true )}
       ;", true )
-      db_execute( debug_path_sql( path ), true )
+      #db_execute( debug_path_sql( path ), true )
       $stderr.puts "delete_path(#{path}) => #{has_path(path, as_of)}"
       #$stdin.getc
     end
     
     def copy_path(path, as_of, copyfrom_path, copyfrom_as_of)
-      $stderr.puts "copy_path(#{path}, #{as_of}, #{copyfrom_path}, #{copyfrom_as_of})"
+      $stderr.puts "copy_path(#{path}, #{as_of} FROM #{copyfrom_path}, #{copyfrom_as_of})"
              #'#{path}' || substr( path, #{copyfrom_path.length + 1}, length( path - #{copyfrom_path.length} ) )
             #'rewrite/' || inner_path, 
 
-      db_execute( 
-        generic_path_sql( 
-          "#{Time.at( as_of ).to_i}, path, length(path), inner_path, length(inner_path), rewrite_path, 'add'",
-          copyfrom_path, 
-          copyfrom_as_of, 
-          true,
-          'add',
-          path
-        ), 
-      true )
+      #db_execute( 
+        #generic_path_sql( 
+          #"#{Time.at( as_of ).to_i}, path, length(path), inner_path, length(inner_path), rewrite_path, 'add'",
+          #copyfrom_path, 
+          #copyfrom_as_of, 
+          #true,
+          #'add',
+          #path
+        #), 
+      #true )
 
-      db_execute( debug_path_sql( copyfrom_path ), true )
+      #db_execute( debug_path_sql( copyfrom_path ), true )
 
       db_execute( "
         INSERT INTO dir_paths (
@@ -83,19 +83,36 @@ module Unwind
             'add',
             path )}
       ;", true )
+
+      #$stderr.puts( "SELECT and replace [#{copyfrom_path}](#{copyfrom_path.length}) with [#{path}](#{path.length})" )
+      #rows = db_execute( 
+        #generic_path_sql( "#{Time.at( as_of ).to_i}, path, rewrite_path, 'add'", 
+          #copyfrom_path, 
+          #copyfrom_as_of, 
+          #true,
+          #'add',
+          #path ), true ) 
+      #for row in rows do
+        #PP::pp row, $stderr
+        #db_execute( "
+          #INSERT INTO dir_paths ( ts, path, action )
+          #VALUES( #{as_of.to_i}, '#{row['rewrite_path']}', 'add' );
+        #;", true )
+      #end
+
       #db_execute( generic_path_sql( "ts, 'rewrite/' || path, 'add'", path, as_of ), true )
       db_execute( debug_path_sql( path ), true )
     end
 
     def has_path(path, as_of=Time.now)
-      $stderr.puts "has_path(#{path})"
+      #$stderr.puts "has_path(#{path})"
       result = db_execute( "SELECT count(*) FROM ( #{path_exists_sql( path, as_of, false )} )", true )
       if ( result.nil? || result.empty? || result[0][0].nil? || result[0][0] == '0' )
         result = false
       else
         result = true
       end
-      $stderr.puts "has_path(#{path}) => #{result}"
+      #$stderr.puts "has_path(#{path}) => #{result}"
       result 
     end
 
@@ -113,7 +130,7 @@ module Unwind
       action_clause = ''
       action_clause = "WHERE dir_paths.action='#{action}'" if action
       replace_clause = ''
-      ( replace_clause = ", '#{replace_prefix}' || substr( path, #{replace_prefix.length + 1}, length( path ) - #{path.length} ) as rewrite_path" ) if replace_prefix
+      ( replace_clause = ", ( '#{replace_prefix}' || substr( path, #{path.length + 1}, length( path ) - #{path.length} )  ) as rewrite_path" ) if replace_prefix
       "
       SELECT 
         #{selection}
@@ -167,7 +184,7 @@ module Unwind
         $stderr.puts "#### END #### END #### END #### END #####"
         $stderr.flush
       end
-      $stderr.puts "#{@db.changes} changes"
+      #$stderr.puts "#{@db.changes} changes"
       results
     end
 
