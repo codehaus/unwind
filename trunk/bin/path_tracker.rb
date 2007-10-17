@@ -9,6 +9,9 @@ module Unwind
                        path          TEXT,
                        action        TEXT
                      );"
+      @db.execute "CREATE INDEX pk_idx ON dir_paths ( path, ts );"
+      @db.execute "CREATE INDEX path_idx ON dir_paths ( path );"
+      @db.execute "CREATE INDEX ts_idx ON dir_paths ( ts );"
       @func = 0
     end
 
@@ -112,7 +115,7 @@ module Unwind
       else
         result = true
       end
-      #$stderr.puts "has_path(#{path}) => #{result}"
+      $logfile.puts "has_path(#{path}) => #{result}"
       result 
     end
 
