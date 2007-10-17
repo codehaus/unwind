@@ -33,12 +33,14 @@ module Unwind
         for rule in @rules
           case (rule)
             when IncludeRule
-              included_nodes << node if rule.match?( node.path )
-              #$stderr.puts "include: #{node.path}"
-              break
+              if ( rule.match?( node.path ) )
+                included_nodes << node
+                $logfile.puts "include: #{node.path} leaving #{included_nodes.size}"
+                break
+              end
             when ExcludeRule
               if rule.match?( node.path )
-                #$stderr.puts "exclude: #{node.path}"
+                $logfile.puts "exclude: #{node.path} leaving #{included_nodes.size}"
                 break
               end
           end
@@ -65,10 +67,11 @@ module Unwind
               end
             end
           end
-          $stderr.puts "Revision #{revision.revision_number}: Error: #{node.path} copyfrom excluded #{node.copyfrom_path}" unless okay
+          $logfile.puts "Revision #{revision.revision_number}: Error: #{node.path} copyfrom excluded #{node.copyfrom_path}" unless okay
         end
       end
       if ( included_nodes.empty? )
+        $logfile.puts "#{revision.revision_number} empty, not including.  0 == #{included_nodes.size}"
         return nil
       end
       revision.nodes = included_nodes
