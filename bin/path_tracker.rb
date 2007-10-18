@@ -115,7 +115,7 @@ module Unwind
       else
         result = true
       end
-      $logfile.puts "has_path(#{path}) => #{result}"
+      #$logfile.puts "has_path(#{path}) => #{result}"
       result 
     end
 

@@ -15,32 +15,32 @@ module Unwind
     end
 
     def add_path(path, revision)
-      add_dir( path ) 
+      #add_dir( path ) 
       @path_tracker.add_path( path, revision.date )
     end
 
-    def add_dir(path)
+    def old_add_dir(path)
       return if has_dir(path)
       $logfile.puts "add dir #{path}"
       @db.execute "INSERT INTO paths (path) VALUES ( '#{path}' );"
     end
 
     def delete_path(path, revision)
-      delete_dir( path )
+      #delete_dir( path )
       @path_tracker.delete_path( path, revision.date )
     end
 
-    def delete_dir(path)
+    def old_delete_dir(path)
       $logfile.puts "delete dir #{path}"
       @db.execute "DELETE FROM paths WHERE path = '#{path}' OR path LIKE '#{path}/%';"
     end
 
     def copy_path(path, as_of, copyfrom_path, copyfrom_as_of)
-      copy_dir( copyfrom_path, path )
+      #copy_dir( copyfrom_path, path )
       @path_tracker.copy_path( path, as_of, copyfrom_path, copyfrom_as_of )
     end
 
-    def copy_dir(from_path, to_path)
+    def old_copy_dir(from_path, to_path)
       $logfile.puts "copydir #{to_path} from #{from_path}"
       paths = @db.execute "SELECT path FROM paths WHERE path LIKE '#{from_path}%';" 
       paths.each do |path|
@@ -50,21 +50,22 @@ module Unwind
       end
     end
 
-    def has_dir(path)
+    def old_has_dir(path)
       result = @db.execute "SELECT path FROM paths WHERE path = '#{path}';"
       #$logfile.puts "exists #{!result.empty?} #{path}"
       ! result.empty?
     end
 
     def has_path(path, as_of=Time.now)
-      simple = has_dir( path )
-      existance = @path_tracker.has_path( path, as_of )
-      if ( simple != existance )
-        #$stderr.puts "DISAGREE: #{path} #{simple} vs #{existance}"
-      else
-        #$stderr.puts "AGREE: #{path} #{simple} vs #{existance}"
-      end
-      existance
+      @path_tracker.has_path( path, as_of )
+
+      #simple = has_dir( path )
+      #if ( simple != existance )
+      #  #$stderr.puts "DISAGREE: #{path} #{simple} vs #{existance}"
+      #else
+      #  #$stderr.puts "AGREE: #{path} #{simple} vs #{existance}"
+      #end
+      #existance
     end
 
 
@@ -101,7 +102,7 @@ module Unwind
       new_nodes = []
       known_paths = {}
       revision.nodes.each_with_index do |node,i|
-        $logfile.puts "node: #{node.action} #{node.path} #{node.copyfrom_path}"
+        #$logfile.puts "node: #{node.action} #{node.path} #{node.copyfrom_path}"
         skip_add = false
         add_nodes = []
         if ( node.action == 'replace' && node.kind == 'dir' )
@@ -110,7 +111,7 @@ module Unwind
           delete_path( node.path, revision )
           add_path( node.path, revision )
         elsif ( node.action == 'add' && ( node.kind == 'dir' || node.copyfrom_path != nil ) )
-          $logfile.puts "#{node.path} copyfrom: #{node.copyfrom_path}"
+          #$logfile.puts "#{node.path} copyfrom: #{node.copyfrom_path}"
           if ( node.copyfrom_path )
             #copy_dir( node.copyfrom_path, node.path )
             copy_path( node.path, revision.date, node.copyfrom_path, node.copyfrom_revision.date )
@@ -118,7 +119,7 @@ module Unwind
             #if ( has_dir( node.path ) )
             if ( has_path( node.path, revision.date ) )
               skip_add = true
-            else
+            elsif ( node.kind == 'dir' )
               #add_dir( node.path )
               add_path( node.path, revision )
             end
@@ -128,7 +129,8 @@ module Unwind
           delete_path( node.path, revision )
         end
         if ( node.action == 'delete' ) 
-          delete_dir( node.path )
+          #delete_dir( node.path )
+          delete_path( node.path, revision )
         end
         cur = File.dirname( node.path )
         #while ( cur != '.' && ! has_dir( cur ) )

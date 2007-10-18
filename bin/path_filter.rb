@@ -35,12 +35,12 @@ module Unwind
             when IncludeRule
               if ( rule.match?( node.path ) )
                 included_nodes << node
-                $logfile.puts "include: #{node.path} leaving #{included_nodes.size}"
+                #$logfile.puts "include: #{node.path} leaving #{included_nodes.size}"
                 break
               end
             when ExcludeRule
               if rule.match?( node.path )
-                $logfile.puts "exclude: #{node.path} leaving #{included_nodes.size}"
+                #$logfile.puts "exclude: #{node.path} leaving #{included_nodes.size}"
                 break
               end
           end
@@ -71,7 +71,7 @@ module Unwind
         end
       end
       if ( included_nodes.empty? )
-        $logfile.puts "#{revision.revision_number} empty, not including.  0 == #{included_nodes.size}"
+        #$logfile.puts "#{revision.revision_number} empty, not including.  0 == #{included_nodes.size}"
         return nil
       end
       revision.nodes = included_nodes
