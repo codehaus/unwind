@@ -26,7 +26,7 @@ module Unwind
     def each
       @backing.each do |revision|
         r = apply_filter( revision )
-        $logfile.puts ( "filterer: (#{@filters.values.collect{|e|e.class.name}.uniq}) revision #{revision.revision_number} #{!r.nil?}"  )
+        #$logfile.puts ( "filterer: (#{@filters.values.collect{|e|e.class.name}.uniq}) revision #{revision.revision_number} #{!r.nil?}"  )
         yield revision if r
       end  
     end
